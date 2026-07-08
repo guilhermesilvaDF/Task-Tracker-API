@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -18,8 +20,14 @@ public class TaskController {
     private TaskService taskService;
 
     @GetMapping
-    public List<Task> getAllTasks(){
-        return taskService.findAll();
+    public Page<Task> getAllTasks(Pageable pageable){
+        return taskService.findAll(pageable);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Task> findById(@PathVariable("id") Long id){
+        Task task = taskService.findById(id);
+        return ResponseEntity.ok(task);
     }
 
     @GetMapping("/done")
@@ -44,7 +52,8 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public Task update(@PathVariable("id") Long id,@Valid @RequestBody Task newTask){
-        return taskService.update(id, newTask);
+    public ResponseEntity<Task> update(@PathVariable("id") Long id,@Valid @RequestBody Task newTask){
+        Task task = taskService.update(id, newTask);
+        return ResponseEntity.ok(task);
     }
 }
